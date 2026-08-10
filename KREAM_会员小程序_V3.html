@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>KREAM会员</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--c1:#151515;--c2:#1e1e1e;--wine:#6d2e46;--gold:#c9a96e;--grn:#4caf50;--red:#e53935;--blue:#42a5f5;--txt:#ece2d0;--dim:#777;--r:14px}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Noto Sans SC',sans-serif;font-size:14px;line-height:1.5;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+.hide{display:none!important}.page{display:none;min-height:100vh;padding-bottom:72px}.page.on{display:block}
+.hd{background:linear-gradient(135deg,var(--wine),#3d1527);padding:16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.hd .logo{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:3px}
+.hd .pts{background:rgba(201,169,110,.15);padding:3px 10px;border-radius:20px;font-size:11px;color:var(--gold);font-weight:700}
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--c1);border-top:1px solid #222;display:flex;padding:5px 0 env(safe-area-inset-bottom,5px);z-index:50}
+.tab a{flex:1;text-align:center;padding:3px 0;color:var(--dim);font-size:9px;cursor:pointer;text-decoration:none}
+.tab a.on{color:var(--gold)}.tab a .i{font-size:17px;display:block;margin-bottom:1px}
+.sec{padding:10px 14px 0}.st{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px}
+.cd{background:var(--c1);border-radius:var(--r);padding:13px;margin-bottom:8px;border:1px solid #222}
+.cd.hl{border-color:var(--gold);background:linear-gradient(135deg,rgba(201,169,110,.06),rgba(109,46,70,.06))}
+.btn{width:100%;padding:11px;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.btn:active{transform:scale(.97)}.btn-g{background:var(--gold);color:#000}.btn-o{background:none;border:1px solid var(--gold);color:var(--gold)}
+.btn-grn{background:var(--grn);color:#fff}.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:7px 14px;font-size:11px;width:auto;border-radius:10px}
+.ig{margin-bottom:10px}.ig label{font-size:10px;color:var(--dim);display:block;margin-bottom:3px}
+.ig input,.ig select,.ig textarea{width:100%;padding:10px 12px;background:var(--c2);border:1px solid #333;border-radius:10px;color:var(--txt);font-size:14px;outline:none}
+.ig input:focus{border-color:var(--gold)}
+.cpn{background:var(--c1);border-radius:var(--r);margin-bottom:8px;overflow:hidden;border:1px solid #222}
+.cpn-top{display:flex;align-items:center;justify-content:space-between;padding:11px 13px}
+.cpn-nm{font-size:12px;font-weight:600}.cpn-sub{font-size:10px;color:var(--dim);margin-top:1px}
+.cpn-val{font-size:20px;font-weight:800;color:var(--gold)}.cpn.used{opacity:.35}.cpn.used .cpn-val{color:#555}
+.cpn-bot{background:var(--c2);padding:7px 13px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--dim)}
+.stats{display:flex;gap:6px;margin:10px 0}
+.stat{flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 4px;text-align:center}
+.stat-n{font-size:18px;font-weight:800;color:var(--gold)}.stat-l{font-size:8px;color:var(--dim);margin-top:1px}
+.rcode{font-size:28px;font-weight:800;letter-spacing:6px;color:var(--gold);text-align:center;padding:14px;background:var(--c2);border-radius:12px;margin:8px 0;font-family:monospace}
+.mo{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end;justify-content:center}
+.mo.on{display:flex}.mo-box{background:var(--c1);border-radius:20px 20px 0 0;padding:18px 14px env(safe-area-inset-bottom,18px);width:100%;max-width:430px;max-height:85vh;overflow-y:auto}
+.mo-box h3{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px}
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:7px 20px;border-radius:20px;font-size:11px;font-weight:600;z-index:200;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}.toast.on{opacity:1}
+.li{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1a1a1a;font-size:12px}.li:last-child{border:none}
+.li-r{color:var(--gold);font-weight:600}
+.empty{text-align:center;color:var(--dim);font-size:11px;padding:20px 0}
+.act-img{width:100%;border-radius:var(--r) var(--r) 0 0;max-height:160px;object-fit:cover;display:block}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px}
+.grid4>div{background:var(--c1);border-radius:10px;padding:10px 2px;text-align:center;cursor:pointer;border:1px solid #222;font-size:9px;color:var(--dim)}
+.grid4>div .gi{font-size:18px;display:block;margin-bottom:2px}
+.day-btn{display:inline-block;padding:6px 10px;margin:2px;border-radius:8px;font-size:11px;cursor:pointer;border:1px solid #333;background:var(--c2);color:var(--txt)}
+.day-btn.on{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+.day-btn.full{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="page on" id="p-login">
+<div style="background:linear-gradient(135deg,var(--wine),#3d1527);padding:50px 18px 30px;text-align:center">
+<div style="font-size:32px;font-weight:800;color:var(--gold);letter-spacing:5px">KREAM</div>
+<div style="font-size:10px;color:rgba(236,226,208,.4);margin-top:3px;letter-spacing:2px">KOREAN RESTAURANT · MEMBERSHIP</div>
+</div>
+<div style="padding:24px 18px">
+<div style="text-align:center;margin-bottom:20px"><div style="font-size:16px;font-weight:700">加入 KREAM 会员</div><div style="font-size:10px;color:var(--dim);margin-top:3px">输入手机号登录 · 新用户自动注册</div></div>
+<div class="ig"><label>手机号码</label><input type="tel" id="l-ph" placeholder="输入手机号"></div>
+<div class="ig"><label>姓名（首次注册）</label><input type="text" id="l-nm" placeholder="您的姓名"></div>
+<div class="ig"><label>验证码（必填：店员验证码 或 会员推荐码）</label><input type="text" id="l-ref" placeholder="输入店员验证码或会员推荐码" style="text-transform:uppercase"></div>
+<button class="btn btn-g" onclick="login()">进入会员中心</button>
+<button class="btn btn-o" style="margin-top:8px" onclick="adminLogin()">管理后台</button>
+</div></div>
+
+<!-- HOME -->
+<div class="page" id="p-home">
+<div class="hd"><div class="logo">KREAM</div><div class="pts" id="h-pts">0积分</div></div>
+<div style="background:linear-gradient(135deg,var(--wine),#3d1527);padding:0 14px 14px;margin-top:-1px;border-radius:0 0 18px 18px">
+<div style="font-size:16px;font-weight:700;color:var(--gold)" id="h-name"></div>
+<div style="font-size:9px;color:rgba(236,226,208,.4);margin-top:1px" id="h-id"></div>
+<div class="stats">
+<div class="stat"><div class="stat-n" id="h-cpn">0</div><div class="stat-l">优惠券</div></div>
+<div class="stat"><div class="stat-n" id="h-ref">0</div><div class="stat-l">已推荐</div></div>
+<div class="stat"><div class="stat-n" id="h-sv">2</div><div class="stat-l">储值机会</div></div>
+</div></div>
+<div class="sec">
+<div class="grid4">
+<div onclick="go('cpn')"><span class="gi">🎫</span>优惠券</div>
+<div onclick="go('bonus')"><span class="gi">🎰</span>每日分红</div>
+<div onclick="go('ref')"><span class="gi">👥</span>推荐好友</div>
+<div onclick="go('pts')"><span class="gi">💎</span>积分中心</div>
+<div onclick="go('sv')"><span class="gi">💳</span>储值活动</div>
+<div onclick="go('act')"><span class="gi">🔥</span>活动</div>
+<div onclick="go('prod')"><span class="gi">🆕</span>新品</div>
+<div onclick="go('home');scrollNotif()"><span class="gi">🔔</span>消息</div>
+</div></div>
+<div class="sec"><div class="st">🔥 近期活动</div><div id="h-acts"></div></div>
+<div class="sec"><div class="st">🆕 新品预告</div><div id="h-prods"></div></div>
+<div class="sec" style="padding-bottom:14px"><div class="st">🔔 消息</div><div id="h-notifs"></div></div>
+</div>
+
+<!-- COUPONS -->
+<div class="page" id="p-cpn">
+<div class="hd"><div class="logo" style="font-size:15px">我的优惠券</div></div>
+<div class="sec">
+<div style="display:flex;gap:6px;margin-bottom:10px">
+<button class="btn-sm btn-g" onclick="fC('active')" id="fc-a" style="flex:1">可使用</button>
+<button class="btn-sm btn-o" onclick="fC('used')" id="fc-u" style="flex:1">已使用</button>
+</div><div id="cpn-list"></div></div></div>
+
+<!-- BONUS -->
+<div class="page" id="p-bonus">
+<div class="hd"><div class="logo" style="font-size:15px">每日分红</div></div>
+<div class="sec">
+<div class="cd hl">
+<div style="font-size:14px;font-weight:700;margin-bottom:4px">📢 每日分红报名</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.7">当日营业额10%为分红池 · 每日限<b style="color:var(--gold)">10人</b> · 上限<b style="color:var(--gold)">100积分</b>/人<br>积分发放至会员账户，可兑换优惠券或现金</div>
+</div>
+<div class="st">选择报名日期（未来7天）</div>
+<div id="bonus-days" style="margin-bottom:10px"></div>
+<div id="bonus-status"></div>
+<div class="st" style="margin-top:10px">我的分红记录</div>
+<div id="bonus-hist"></div>
+</div></div>
+
+<!-- REFERRAL -->
+<div class="page" id="p-ref">
+<div class="hd"><div class="logo" style="font-size:15px">推荐好友</div></div>
+<div class="sec">
+<div class="cd hl" style="text-align:center">
+<div style="font-size:10px;color:var(--dim)">我的推荐码</div>
+<div class="rcode" id="ref-code"></div>
+<button class="btn btn-g btn-sm" onclick="copyRef()" style="width:100%">📋 复制推荐信息</button>
+</div>
+<div class="cd">
+<div style="font-size:12px;font-weight:700;margin-bottom:6px">推荐奖励</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">
+🎁 推荐好友注册 → <b style="color:var(--grn)">你获100积分</b><br>
+🎁 好友用推荐码注册 → <b style="color:var(--grn)">好友获100积分</b><br>
+💰 好友每次到店消费 → <b style="color:var(--gold)">返现积分自动到你账户</b><br>
+<span style="font-size:9px">计算：(消费额-10%服务费)×5% → 转换为积分</span>
+</div></div>
+<div class="st" style="margin-top:8px">我推荐的好友</div>
+<div id="ref-list"></div>
+</div></div>
+
+<!-- POINTS -->
+<div class="page" id="p-pts">
+<div class="hd"><div class="logo" style="font-size:15px">积分中心</div></div>
+<div class="sec">
+<div class="cd hl" style="text-align:center">
+<div style="font-size:10px;color:var(--dim)">当前积分</div>
+<div style="font-size:36px;font-weight:800;color:var(--gold)" id="pts-bal">0</div>
+<div style="font-size:10px;color:var(--dim)">2000积分 = $150储值金</div>
+</div>
+<div class="st">兑换优惠券</div>
+<div class="cd" onclick="rdm(100,8)" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">8% 优惠券</b><br><span style="font-size:10px;color:var(--dim)">100积分兑换</span></div>
+<div style="color:var(--gold);font-weight:800;font-size:16px">8%OFF</div></div>
+<div class="cd" onclick="rdm(250,15)" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">15% 优惠券</b><br><span style="font-size:10px;color:var(--dim)">250积分兑换</span></div>
+<div style="color:var(--gold);font-weight:800;font-size:16px">15%OFF</div></div>
+<div class="cd" onclick="rdm(500,30)" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">30% 优惠券</b><br><span style="font-size:10px;color:var(--dim)">500积分兑换</span></div>
+<div style="color:var(--gold);font-weight:800;font-size:16px">30%OFF</div></div>
+<div class="st" style="margin-top:6px">兑换储值金</div>
+<div class="cd" onclick="rdmCash()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">💵 兑换储值金</b><br><span style="font-size:10px;color:var(--dim)">2000积分=$150储值金（其中$75可折现）</span></div>
+<div style="color:var(--gold)">→</div></div>
+<div class="st" style="margin-top:6px">积分明细</div>
+<div id="pts-log"></div>
+</div></div>
+
+<!-- STORE VALUE ACTIVITY -->
+<div class="page" id="p-sv">
+<div class="hd"><div class="logo" style="font-size:15px">储值活动</div></div>
+<div class="sec">
+<div class="cd hl">
+<div style="font-size:14px;font-weight:700;margin-bottom:4px">💳 储值免单活动</div>
+<div style="font-size:11px;color:var(--dim);line-height:1.8">每月 <b style="color:var(--gold)">2次机会</b><br>储值当餐消费金额的3倍 → <b style="color:var(--grn)">当餐免单</b><br><span style="font-size:9px">例：当餐消费$50 → 储值$150 → 当餐$50免单<br>储值金可用于后续到店消费</span></div>
+</div>
+<div class="cd" style="text-align:center">
+<div style="font-size:11px;color:var(--dim)">本月剩余机会</div>
+<div style="font-size:36px;font-weight:800;color:var(--gold)" id="sv-remain">2</div>
+<div style="font-size:9px;color:var(--dim)">每月1日重置 · 由店员操作记录</div>
+</div>
+<div class="st">使用记录</div>
+<div id="sv-hist"></div>
+</div></div>
+
+<!-- ACTIVITIES -->
+<div class="page" id="p-act">
+<div class="hd"><div class="logo" style="font-size:15px">活动中心</div></div>
+<div class="sec"><div id="act-list"></div></div></div>
+
+<!-- PRODUCTS -->
+<div class="page" id="p-prod">
+<div class="hd"><div class="logo" style="font-size:15px">新品预告</div></div>
+<div class="sec"><div id="prod-list"></div></div></div>
+
+<!-- ADMIN -->
+<div class="page" id="p-admin">
+<div class="hd"><div class="logo" style="font-size:15px">管理后台</div></div>
+<div class="sec">
+<div class="cd" onclick="aMembers()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>👥 会员管理</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aRedeem()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>✅ 核销优惠券</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aSpend()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>💰 记录会员消费</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aBonus()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🎰 结算每日分红</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aSV()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>💳 记录储值活动</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aIssCpn()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🎫 手动发券</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aAct()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>📢 管理活动(含图片)</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aProd()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🆕 管理新品(含图片)</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aStoreCode()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🔐 店员验证码管理</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" onclick="aStat()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>📊 数据统计</b><span style="color:var(--gold)">→</span></div></div>
+<button class="btn btn-o" onclick="go('login')" style="margin-top:10px;border-color:#555;color:#888">退出后台</button>
+</div></div>
+
+<!-- MODAL -->
+<div class="mo" id="mo" onclick="if(event.target===this)closeMo()"><div class="mo-box"><h3 id="mo-t"></h3><div id="mo-b"></div></div></div>
+
+<!-- TAB -->
+<div class="tab hide" id="tabbar">
+<a onclick="go('home')" id="t-home" class="on"><span class="i">🏠</span>首页</a>
+<a onclick="go('cpn')" id="t-cpn"><span class="i">🎫</span>优惠券</a>
+<a onclick="go('bonus')" id="t-bonus"><span class="i">🎰</span>分红</a>
+<a onclick="go('sv')" id="t-sv"><span class="i">💳</span>储值</a>
+<a onclick="go('ref')" id="t-ref"><span class="i">👥</span>推荐</a>
+</div>
+
+<script>
+const D={g(k){try{return JSON.parse(localStorage.getItem('k3_'+k))}catch{return null}},s(k,v){localStorage.setItem('k3_'+k,JSON.stringify(v))}};
+const PTS_RATE=2000/150; // 1 SGD = 13.33 points
+if(!D.g('m'))D.s('m',{});if(!D.g('c'))D.s('c',[]);if(!D.g('pl'))D.s('pl',[]);if(!D.g('bn'))D.s('bn',[]);
+if(!D.g('nf'))D.s('nf',[]);if(!D.g('sp'))D.s('sp',[]);if(!D.g('sv'))D.s('sv',[]);
+if(!D.g('acts'))D.s('acts',[{id:1,title:'VIP Day 每日分红',desc:'每日营业额10%分红池，限10人报名。积分可兑换优惠券或现金！',type:'vip',date:'每日',img:''},
+{id:2,title:'推荐有礼·双重积分',desc:'推荐好友注册双方各获100积分，好友消费还能持续返积分！',type:'vip',date:'长期有效',img:''},
+{id:3,title:'储值免单·月享2次',desc:'储值当餐消费3倍金额，当餐免单！每月2次机会。',type:'vip',date:'每月',img:''}]);
+if(!D.g('storeCode'))D.s('storeCode','KREAM88');
+if(!D.g('prods'))D.s('prods',[{id:1,name:'🔥 榴莲芝士炸鸡',desc:'东南亚风味碰撞韩式炸鸡，榴莲芝士酱浓郁拉丝。',date:'即将上线',img:''},
+{id:2,name:'🆕 熔岩芝士鸡蛋羹',desc:'韩式鸡蛋羹升级版，流心芝士内馅。',date:'新品',img:''}]);
+
+let U=null,selBonusDate='';
+window.addEventListener('load',()=>{const sv=D.g('lu');if(sv){document.getElementById('l-ph').value=sv.ph||'';document.getElementById('l-nm').value=sv.nm||'';}});
+
+function login(){
+  const ph=document.getElementById('l-ph').value.trim(),nm=document.getElementById('l-nm').value.trim(),ref=document.getElementById('l-ref').value.trim().toUpperCase();
+  if(!ph||ph.length<6){toast('请输入有效手机号');return}
+  let ms=D.g('m');
+  // Existing member login
+  if(ms[ph]){U=ms[ph];D.s('lu',{ph,nm:U.name});rHome();go('home');document.getElementById('tabbar').classList.remove('hide');return}
+  // New registration - must have valid code
+  if(!nm){toast('首次注册请填写姓名');return}
+  if(!ref){toast('请输入店员验证码或会员推荐码');return}
+  const STORE_CODE=D.g('storeCode')||'KREAM88';
+  const isStoreCode=ref===STORE_CODE;
+  const referrer=!isStoreCode?Object.values(ms).find(m=>m.code===ref):null;
+  if(!isStoreCode&&!referrer){toast('验证码无效！请输入正确的店员验证码或会员推荐码');return}
+  // Valid - proceed registration
+  const code=gRC();const nu={ph,name:nm,join:td(),code,refBy:'',pts:0,bonusCnt:0,spent:0};
+  if(isStoreCode){
+    // Store-assisted registration: 100 welcome points
+    mPts2(nu,100);toast('注册成功！欢迎加入KREAM会员🎉 获得100积分');
+  }else if(referrer){
+    // Referral registration: both get 100 points
+    nu.refBy=referrer.ph;
+    mPts(referrer.ph,100,'推荐好友'+nm+'注册');
+    addNf(referrer.ph,'🎉 '+nm+'用你的推荐码注册了！+100积分');
+    ms[referrer.ph]=referrer;
+    mPts2(nu,100);toast('注册成功！推荐码有效，获得100积分🎉');
+  }
+  ms[ph]=nu;D.s('m',ms);U=nu;D.s('lu',{ph,nm});rHome();go('home');document.getElementById('tabbar').classList.remove('hide');
+}
+function mPts2(mem,amt){mem.pts=(mem.pts||0)+amt;let pl=D.g('pl');pl.push({mid:mem.ph,amt,src:'新会员注册礼',date:td()});D.s('pl',pl)}
+function adminLogin(){const pw=prompt('管理密码:');if(pw==='kream2026'){go('admin');document.getElementById('tabbar').classList.add('hide')}else if(pw!==null)toast('密码错误')}
+function logout(){U=null;go('login');document.getElementById('tabbar').classList.add('hide')}
+
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.getElementById('p-'+id).classList.add('on');
+document.querySelectorAll('.tab a').forEach(a=>a.classList.remove('on'));const t=document.getElementById('t-'+id);if(t)t.classList.add('on');
+if(id==='home')rHome();if(id==='cpn')rCpn('active');if(id==='bonus')rBonus();if(id==='ref')rRef();if(id==='pts')rPts();if(id==='sv')rSV();
+if(id==='act')rActs(document.getElementById('act-list'),99);if(id==='prod')rProds(document.getElementById('prod-list'),99);window.scrollTo(0,0)}
+
+// HOME
+function rHome(){if(!U)return;const ms=D.g('m');U=ms[U.ph]||U;
+document.getElementById('h-name').textContent=U.name+' 👋';
+document.getElementById('h-id').textContent='ID:'+U.ph.slice(-4)+' · '+U.join;
+document.getElementById('h-pts').textContent=U.pts+'积分';
+document.getElementById('h-cpn').textContent=D.g('c').filter(c=>c.mid===U.ph&&c.st==='active').length;
+document.getElementById('h-ref').textContent=Object.values(ms).filter(m=>m.refBy===U.ph).length;
+const cm=curMonth(),svr=D.g('sv').filter(s=>s.mid===U.ph&&s.month===cm);
+document.getElementById('h-sv').textContent=Math.max(0,2-svr.length);
+rActs(document.getElementById('h-acts'),2);rProds(document.getElementById('h-prods'),2);
+const nfs=D.g('nf').filter(n=>n.to===U.ph).reverse().slice(0,5);
+let nh='';if(!nfs.length)nh='<div class="empty">暂无消息</div>';
+nfs.forEach(n=>{nh+=`<div class="cd" style="font-size:11px;padding:9px 12px">${n.msg}<br><span style="font-size:9px;color:var(--dim)">${n.date}</span></div>`;});
+document.getElementById('h-notifs').innerHTML=nh}
+function scrollNotif(){setTimeout(()=>{const el=document.getElementById('h-notifs');if(el)el.scrollIntoView({behavior:'smooth'})},100)}
+
+// COUPONS (percentage-based)
+function rCpn(f){const all=D.g('c').filter(c=>c.mid===U.ph);
+document.getElementById('fc-a').className=f==='active'?'btn-sm btn-g':'btn-sm btn-o';document.getElementById('fc-a').style.flex='1';
+document.getElementById('fc-u').className=f==='used'?'btn-sm btn-g':'btn-sm btn-o';document.getElementById('fc-u').style.flex='1';
+const fl=all.filter(c=>c.st===f);let h='';
+if(!fl.length)h='<div class="empty">暂无'+(f==='active'?'可用':'已使用')+'优惠券</div>';
+fl.forEach(c=>{const u=c.st!=='active';
+h+=`<div class="cpn ${u?'used':''}"><div class="cpn-top"><div><div class="cpn-nm">${c.src}</div><div class="cpn-sub">${c.exp}前有效</div></div><div class="cpn-val">${c.pct}%OFF</div></div>
+<div class="cpn-bot"><span>核销码: ${c.rcode}</span>${u?'<span>已核销</span>':`<button class="btn-sm btn-g" onclick="showR('${c.id}')" style="padding:3px 10px;font-size:9px">出示核销</button>`}</div></div>`;});
+document.getElementById('cpn-list').innerHTML=h}
+function fC(f){rCpn(f)}
+function showR(cid){const c=D.g('c').find(x=>x.id===cid);if(!c)return;
+openMo('出示核销码给店员',`<div style="text-align:center"><div style="font-size:12px;color:var(--dim)">${c.src} · ${c.pct}%OFF</div>
+<div class="rcode" style="font-size:36px">${c.rcode}</div><div style="font-size:10px;color:var(--dim)">请将核销码出示给店员</div><div style="font-size:9px;color:var(--red);margin-top:8px">有效期至 ${c.exp}</div></div>`)}
+
+// BONUS (7-day selection)
+function rBonus(){
+  let dh='';const bns=D.g('bn');
+  for(let i=0;i<7;i++){const d=new Date(Date.now()+i*864e5);const ds=d.toISOString().slice(0,10);
+    const bn=bns.find(b=>b.date===ds);const cnt=bn?bn.members.length:0;const full=cnt>=10;
+    const joined=bn&&bn.members.includes(U.ph);const isOn=ds===selBonusDate;
+    const label=i===0?'今天':i===1?'明天':ds.slice(5);
+    dh+=`<span class="day-btn ${isOn?'on':''} ${full&&!joined?'full':''}" onclick="selDay('${ds}')">${label}${joined?' ✅':''} (${cnt}/10)</span>`;}
+  document.getElementById('bonus-days').innerHTML=dh;
+  // Status for selected day
+  let sh='';
+  if(selBonusDate){const bn=bns.find(b=>b.date===selBonusDate);const joined=bn&&bn.members.includes(U.ph);const full=bn&&bn.members.length>=10;
+    if(bn&&bn.settled){sh=`<div class="cd" style="text-align:center"><div style="color:var(--grn);font-weight:700">✅ ${selBonusDate} 已结算</div><div style="font-size:11px;color:var(--dim);margin-top:4px">营收$${bn.revenue} · 每人${bn.pp}积分</div></div>`}
+    else if(joined){sh=`<div class="cd" style="text-align:center"><div style="color:var(--grn);font-weight:700">✅ 已报名 ${selBonusDate}</div><div style="font-size:11px;color:var(--dim);margin-top:4px">等待结算</div></div>`}
+    else if(full){sh=`<div class="cd" style="text-align:center;color:var(--red)">该日名额已满</div>`}
+    else{sh=`<div class="cd" style="text-align:center"><button class="btn btn-g" onclick="joinB()">🎰 报名 ${selBonusDate} 分红</button></div>`}
+  }else{sh='<div class="cd empty">请选择日期</div>'}
+  document.getElementById('bonus-status').innerHTML=sh;
+  // History
+  const myB=bns.filter(b=>b.settled&&b.members.includes(U.ph)).reverse().slice(0,10);
+  let hh='';if(!myB.length)hh='<div class="empty">暂无记录</div>';
+  myB.forEach(b=>{hh+=`<div class="li"><div>${b.date}<br><span style="font-size:9px;color:var(--dim)">营收$${b.revenue}·${b.members.length}人</span></div><div class="li-r">+${b.pp}积分</div></div>`});
+  document.getElementById('bonus-hist').innerHTML=hh}
+function selDay(d){selBonusDate=d;rBonus()}
+function joinB(){if(!selBonusDate){toast('请先选日期');return}let bns=D.g('bn');let bn=bns.find(b=>b.date===selBonusDate);
+if(!bn){bn={date:selBonusDate,members:[],settled:false,revenue:0,pp:0};bns.push(bn)}
+if(bn.members.includes(U.ph)){toast('已报名');return}if(bn.members.length>=10){toast('名额已满');return}
+bn.members.push(U.ph);D.s('bn',bns);toast('报名成功！');rBonus()}
+
+// REFERRAL
+function rRef(){document.getElementById('ref-code').textContent=U.code;
+const ms=D.g('m'),refs=Object.values(ms).filter(m=>m.refBy===U.ph);let h='';
+if(!refs.length)h='<div class="empty">暂无推荐记录</div>';
+refs.forEach(r=>{const cashback=((r.spent||0)*0.9*0.05*PTS_RATE).toFixed(0);
+h+=`<div class="li"><div><b>${r.name}</b><br><span style="font-size:9px;color:var(--dim)">消费$${r.spent||0}</span></div><div class="li-r">返${cashback}积分</div></div>`});
+document.getElementById('ref-list').innerHTML=h}
+function copyRef(){const t=`KREAM韩式餐厅会员推荐！用我的推荐码 ${U.code} 注册立获100积分！推荐链接：[小程序链接]`;
+try{navigator.clipboard.writeText(t);toast('已复制！')}catch{toast('推荐码:'+U.code)}}
+
+// POINTS
+function rPts(){const ms=D.g('m');U=ms[U.ph]||U;document.getElementById('pts-bal').textContent=U.pts;
+const logs=D.g('pl').filter(l=>l.mid===U.ph).reverse().slice(0,20);let h='';
+if(!logs.length)h='<div class="empty">暂无积分记录</div>';
+logs.forEach(l=>{h+=`<div class="li"><div>${l.src}<br><span style="font-size:9px;color:var(--dim)">${l.date}</span></div><div class="li-r" style="color:${l.amt>0?'var(--grn)':'var(--red)'}">${l.amt>0?'+':''}${l.amt}</div></div>`});
+document.getElementById('pts-log').innerHTML=h}
+function rdm(pts,pct){if(U.pts<pts){toast('积分不足(需'+pts+')');return}
+if(!confirm(`确认用${pts}积分兑换${pct}%优惠券？`))return;
+mPts(U.ph,-pts,'兑换'+pct+'%优惠券');addCpn(U.ph,pct,pct+'%优惠券(积分兑换)',30);toast('兑换成功！');rPts()}
+function rdmCash(){if(U.pts<2000){toast('积分不足(需2000)');return}
+if(!confirm('确认用2000积分兑换$150储值金？\n其中$75可折现，$75为店内储值金'))return;
+mPts(U.ph,-2000,'兑换$150储值金');addNf(U.ph,'✅ 2000积分已兑换为$150储值金（$75可折现），请到店办理');toast('兑换成功！请到店领取');rPts()}
+
+// STORE VALUE ACTIVITY
+function rSV(){const cm=curMonth(),svr=D.g('sv').filter(s=>s.mid===U.ph&&s.month===cm);
+document.getElementById('sv-remain').textContent=Math.max(0,2-svr.length);
+const allSv=D.g('sv').filter(s=>s.mid===U.ph).reverse().slice(0,10);let h='';
+if(!allSv.length)h='<div class="empty">暂无储值记录<br>到店时请店员操作</div>';
+allSv.forEach(s=>{h+=`<div class="li"><div>${s.date}<br><span style="font-size:9px;color:var(--dim)">消费$${s.meal} · 储值$${s.store}</span></div><div class="li-r" style="color:var(--grn)">免单$${s.meal}</div></div>`});
+document.getElementById('sv-hist').innerHTML=h}
+
+// ACTIVITIES & PRODUCTS (with images)
+function rActs(el,max){const acts=D.g('acts').slice(0,max);let h='';
+acts.forEach(a=>{h+=`<div class="cd" style="padding:0;overflow:hidden">${a.img?`<img src="${a.img}" class="act-img" onerror="this.style.display='none'">`:''}<div style="padding:12px"><span style="display:inline-block;font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;margin-bottom:4px;${a.type==='vip'?'background:rgba(201,169,110,.2);color:var(--gold)':'background:rgba(66,165,245,.2);color:var(--blue)'}">${a.type==='vip'?'会员专属':'全部顾客'}</span><div style="font-size:13px;font-weight:700">${a.title}</div><div style="font-size:11px;color:var(--dim);margin-top:3px">${a.desc}</div><div style="font-size:9px;color:var(--dim);margin-top:4px">${a.date}</div></div></div>`});
+if(!acts.length)h='<div class="empty">暂无活动</div>';el.innerHTML=h}
+function rProds(el,max){const ps=D.g('prods').slice(0,max);let h='';
+ps.forEach(p=>{h+=`<div class="cd" style="padding:0;overflow:hidden">${p.img?`<img src="${p.img}" class="act-img" onerror="this.style.display='none'">`:''}<div style="padding:12px"><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:11px;color:var(--dim);margin-top:3px">${p.desc}</div><div style="font-size:9px;color:var(--gold);margin-top:4px">${p.date}</div></div></div>`});
+if(!ps.length)h='<div class="empty">暂无新品</div>';el.innerHTML=h}
+
+// === ADMIN ===
+function aMembers(){const ms=D.g('m'),ls=Object.values(ms);let h=`<div style="font-size:11px;color:var(--dim);margin-bottom:6px">共${ls.length}人</div>`;
+ls.forEach(m=>{h+=`<div class="li"><div><b>${m.name}</b><br><span style="font-size:9px;color:var(--dim)">${m.ph}·${m.pts}分·消费$${m.spent||0}</span></div><div class="li-r">${D.g('c').filter(c=>c.mid===m.ph&&c.st==='active').length}券</div></div>`});
+openMo('👥 会员('+ls.length+')',h)}
+
+function aRedeem(){openMo('✅ 核销优惠券',`<div style="font-size:11px;color:var(--dim);margin-bottom:8px">输入顾客的6位核销码</div>
+<div class="ig"><input type="text" id="ar-c" placeholder="核销码" style="text-transform:uppercase;text-align:center;font-size:18px;letter-spacing:4px"></div>
+<button class="btn btn-g" onclick="doRedeem()">核销</button><div id="ar-r" style="margin-top:10px"></div>`)}
+function doRedeem(){const c=document.getElementById('ar-c').value.trim().toUpperCase();if(!c){toast('请输入');return}
+let cs=D.g('c');const i=cs.findIndex(x=>x.rcode===c&&x.st==='active');
+if(i===-1){document.getElementById('ar-r').innerHTML='<div style="color:var(--red);text-align:center;font-weight:700">❌ 无效或已使用</div>';return}
+const cp=cs[i],ms=D.g('m'),mb=ms[cp.mid];cs[i].st='used';cs[i].usedDate=td();D.s('c',cs);
+document.getElementById('ar-r').innerHTML=`<div style="text-align:center;color:var(--grn)"><div style="font-size:16px;font-weight:700">✅ 核销成功</div><div style="margin-top:6px;font-size:12px">${mb?mb.name:'未知'} · ${cp.pct}%OFF · ${cp.src}</div></div>`}
+
+function aSpend(){const ms=D.g('m');let ops='';Object.values(ms).forEach(m=>{ops+=`<option value="${m.ph}">${m.name}(${m.ph})</option>`});
+openMo('💰 记录消费',`<div style="font-size:11px;color:var(--dim);margin-bottom:8px">记录消费金额 · 系统自动处理推荐人返积分</div>
+<div class="ig"><label>会员</label><select id="as-m">${ops}</select></div>
+<div class="ig"><label>消费金额(SGD)</label><input type="number" id="as-a" placeholder="85"></div>
+<button class="btn btn-g" onclick="doSpend()">记录</button><div id="as-r" style="margin-top:10px"></div>`)}
+function doSpend(){const ph=document.getElementById('as-m').value,amt=parseFloat(document.getElementById('as-a').value);
+if(!ph||!amt){toast('请填完整');return}let ms=D.g('m');const mb=ms[ph];if(!mb)return;
+mb.spent=(mb.spent||0)+amt;ms[ph]=mb;D.s('m',ms);
+let sp=D.g('sp');sp.push({mid:ph,amt,date:td()});D.s('sp',sp);
+let ri='';if(mb.refBy){const rw=Math.round(amt*0.9*0.05*PTS_RATE);if(rw>0){mPts(mb.refBy,rw,'好友'+mb.name+'消费$'+amt+'返积分');
+addNf(mb.refBy,'💰 好友'+mb.name+'消费$'+amt+'，你获得'+rw+'积分！');const rr=ms[mb.refBy];
+ri=`<br><br>推荐人<b>${rr?rr.name:mb.refBy}</b>获得<b style="color:var(--grn)">${rw}积分</b><br><span style="font-size:9px;color:var(--dim)">($${amt}-10%)×5%×${PTS_RATE.toFixed(1)}=${rw}积分</span>`}}
+document.getElementById('as-r').innerHTML=`<div style="text-align:center;color:var(--grn)"><div style="font-size:15px;font-weight:700">✅ 记录成功</div><div style="margin-top:4px;font-size:12px">${mb.name} 消费$${amt}${ri}</div></div>`}
+
+function aBonus(){const bns=D.g('bn');let ds='';
+for(let i=0;i<7;i++){const d=new Date(Date.now()-i*864e5).toISOString().slice(0,10);const bn=bns.find(b=>b.date===d);
+ds+=`<option value="${d}" ${bn&&bn.settled?'disabled':''}>${d} (${bn?bn.members.length:0}人报名${bn&&bn.settled?' ✅已结算':''})</option>`}
+openMo('🎰 结算分红',`<div class="ig"><label>选择日期</label><select id="ab-d">${ds}</select></div>
+<div class="ig"><label>当日营业额(SGD)</label><input type="number" id="ab-r" placeholder="2500"></div>
+<div id="ab-c" style="margin:6px 0"></div>
+<button class="btn btn-g" onclick="calcB()">计算</button><button class="btn btn-grn" onclick="settleB()" style="margin-top:6px">确认发放积分</button>`)}
+function calcB(){const rev=parseFloat(document.getElementById('ab-r').value)||0,d=document.getElementById('ab-d').value;
+const bn=D.g('bn').find(b=>b.date===d);const hc=bn?bn.members.length:0;if(!rev||!hc){toast('请填写/无人报名');return}
+const pool=rev*0.1;let pp=Math.min(Math.floor(pool/hc*PTS_RATE),100);
+document.getElementById('ab-c').innerHTML=`<div class="cd" style="font-size:12px">池$${pool.toFixed(0)} · ${hc}人 · 每人<b style="color:var(--grn)">${pp}积分</b>${pp>=100?' (上限)':''}</div>`}
+function settleB(){const rev=parseFloat(document.getElementById('ab-r').value)||0,d=document.getElementById('ab-d').value;if(!rev){toast('请先计算');return}
+let bns=D.g('bn'),bn=bns.find(b=>b.date===d);if(!bn||!bn.members.length){toast('无报名');return}if(bn.settled){toast('已结算');return}
+const pool=rev*0.1;let pp=Math.min(Math.floor(pool/bn.members.length*PTS_RATE),100);
+bn.revenue=rev;bn.pp=pp;bn.settled=true;D.s('bn',bns);
+let ms=D.g('m');bn.members.forEach(ph=>{mPts(ph,pp,'每日分红'+d);if(ms[ph]){ms[ph].bonusCnt=(ms[ph].bonusCnt||0)+1;addNf(ph,'🎰 分红到账！+'+pp+'积分')}});D.s('m',ms);
+toast('已发放！');closeMo()}
+
+function aSV(){const ms=D.g('m');let ops='';Object.values(ms).forEach(m=>{ops+=`<option value="${m.ph}">${m.name}(${m.ph})</option>`});
+openMo('💳 记录储值活动',`<div style="font-size:11px;color:var(--dim);margin-bottom:8px">客户储值3倍当餐金额→当餐免单 · 每月2次</div>
+<div class="ig"><label>会员</label><select id="sv-m" onchange="chkSV()">${ops}</select></div>
+<div id="sv-info" style="margin-bottom:8px"></div>
+<div class="ig"><label>当餐消费金额(SGD)</label><input type="number" id="sv-meal" placeholder="50" oninput="calcSV()"></div>
+<div id="sv-calc" style="margin:6px 0"></div>
+<button class="btn btn-g" onclick="doSV()">确认记录</button>`);chkSV()}
+function chkSV(){const ph=document.getElementById('sv-m').value,cm=curMonth(),svr=D.g('sv').filter(s=>s.mid===ph&&s.month===cm);
+document.getElementById('sv-info').innerHTML=`<div class="cd" style="font-size:12px">本月已使用 <b>${svr.length}/2</b> 次${svr.length>=2?' <span style="color:var(--red)">(已用完)</span>':''}</div>`}
+function calcSV(){const meal=parseFloat(document.getElementById('sv-meal').value)||0;
+document.getElementById('sv-calc').innerHTML=meal?`<div class="cd" style="font-size:12px">储值金额: <b style="color:var(--gold)">$${(meal*3).toFixed(0)}</b> (${meal}×3)<br>当餐免单: <b style="color:var(--grn)">$${meal}</b></div>`:''}
+function doSV(){const ph=document.getElementById('sv-m').value,meal=parseFloat(document.getElementById('sv-meal').value);
+if(!ph||!meal){toast('请填完整');return}const cm=curMonth(),svr=D.g('sv').filter(s=>s.mid===ph&&s.month===cm);
+if(svr.length>=2){toast('本月机会已用完');return}
+let svs=D.g('sv');svs.push({mid:ph,month:cm,date:td(),meal,store:meal*3});D.s('sv',svs);
+addNf(ph,'💳 储值活动已记录！储值$'+(meal*3)+' · 当餐$'+meal+'免单');toast('记录成功！');closeMo()}
+
+function aIssCpn(){const ms=D.g('m');let ops='';Object.values(ms).forEach(m=>{ops+=`<option value="${m.ph}">${m.name}</option>`});
+openMo('🎫 发放优惠券',`<div class="ig"><label>会员</label><select id="ai-m">${ops}<option value="ALL">全部</option></select></div>
+<div class="ig"><label>折扣(%)</label><select id="ai-p"><option value="8">8%</option><option value="15">15%</option><option value="30">30%</option><option value="50">50%</option></select></div>
+<div class="ig"><label>原因</label><input type="text" id="ai-s" placeholder="好评奖励"></div>
+<div class="ig"><label>有效天数</label><input type="number" id="ai-d" value="30"></div>
+<button class="btn btn-g" onclick="doIssCpn()">发放</button>`)}
+function doIssCpn(){const t=document.getElementById('ai-m').value,p=parseInt(document.getElementById('ai-p').value),s=document.getElementById('ai-s').value||'手动',d=parseInt(document.getElementById('ai-d').value)||30;
+if(t==='ALL'){Object.keys(D.g('m')).forEach(ph=>addCpn(ph,p,s,d));toast('全员已发放')}else{addCpn(t,p,s,d);toast('已发放')}closeMo()}
+
+function aAct(){openMo('📢 管理活动',`<div class="ig"><label>标题</label><input type="text" id="aa-t"></div>
+<div class="ig"><label>描述</label><textarea id="aa-d" rows="2"></textarea></div>
+<div class="ig"><label>图片URL（可选）</label><input type="text" id="aa-img" placeholder="https://..."></div>
+<div class="ig"><label>类型</label><select id="aa-tp"><option value="vip">会员专属</option><option value="all">全部</option></select></div>
+<div class="ig"><label>日期</label><input type="text" id="aa-dt" placeholder="每周三"></div>
+<button class="btn btn-g" onclick="doAddAct()">添加</button><div class="st" style="margin-top:12px">现有活动</div><div id="aa-ls"></div>`);
+let h='';D.g('acts').forEach((a,i)=>{h+=`<div class="li"><div>${a.title}</div><div class="li-r" style="cursor:pointer;color:var(--red)" onclick="delAct(${i})">删除</div></div>`});
+document.getElementById('aa-ls').innerHTML=h||'<div class="empty">无</div>'}
+function doAddAct(){const t=document.getElementById('aa-t').value,d=document.getElementById('aa-d').value,img=document.getElementById('aa-img').value,
+tp=document.getElementById('aa-tp').value,dt=document.getElementById('aa-dt').value;if(!t){toast('填标题');return}
+let a=D.g('acts');a.push({id:Date.now(),title:t,desc:d,type:tp,date:dt,img});D.s('acts',a);toast('已添加');closeMo()}
+function delAct(i){let a=D.g('acts');a.splice(i,1);D.s('acts',a);aAct()}
+
+function aProd(){openMo('🆕 管理新品',`<div class="ig"><label>名称</label><input type="text" id="ap-n"></div>
+<div class="ig"><label>描述</label><textarea id="ap-d" rows="2"></textarea></div>
+<div class="ig"><label>图片URL（可选）</label><input type="text" id="ap-img" placeholder="https://..."></div>
+<div class="ig"><label>状态</label><input type="text" id="ap-dt" value="新品"></div>
+<button class="btn btn-g" onclick="doAddProd()">添加</button><div class="st" style="margin-top:12px">现有新品</div><div id="ap-ls"></div>`);
+let h='';D.g('prods').forEach((p,i)=>{h+=`<div class="li"><div>${p.name}</div><div class="li-r" style="cursor:pointer;color:var(--red)" onclick="delProd(${i})">删除</div></div>`});
+document.getElementById('ap-ls').innerHTML=h||'<div class="empty">无</div>'}
+function doAddProd(){const n=document.getElementById('ap-n').value,d=document.getElementById('ap-d').value,img=document.getElementById('ap-img').value,dt=document.getElementById('ap-dt').value||'新品';
+if(!n){toast('填名称');return}let p=D.g('prods');p.push({id:Date.now(),name:n,desc:d,date:dt,img});D.s('prods',p);toast('已添加');closeMo()}
+function delProd(i){let p=D.g('prods');p.splice(i,1);D.s('prods',p);aProd()}
+
+function aStoreCode(){const cur=D.g('storeCode')||'KREAM88';
+openMo('🔐 店员验证码管理',`<div style="text-align:center;margin-bottom:16px"><div style="font-size:11px;color:var(--dim)">当前店员验证码</div><div class="rcode">${cur}</div><div style="font-size:10px;color:var(--dim);margin-top:4px">店员使用此验证码协助顾客注册</div></div>
+<div class="ig"><label>修改验证码（大写字母+数字）</label><input type="text" id="sc-new" placeholder="新验证码" value="${cur}" style="text-transform:uppercase;text-align:center;font-size:18px;letter-spacing:3px"></div>
+<button class="btn btn-g" onclick="saveStoreCode()">保存</button>`)}
+function saveStoreCode(){const c=document.getElementById('sc-new').value.trim().toUpperCase();if(!c||c.length<4){toast('至少4位');return}D.s('storeCode',c);toast('验证码已更新为: '+c);closeMo()}
+function aStat(){const ms=D.g('m'),cs=D.g('c'),sp=D.g('sp'),bn=D.g('bn'),sv=D.g('sv');
+openMo('📊 统计',`<div class="li"><div>总会员</div><div class="li-r">${Object.keys(ms).length}</div></div>
+<div class="li"><div>活跃优惠券</div><div class="li-r">${cs.filter(c=>c.st==='active').length}</div></div>
+<div class="li"><div>已核销券</div><div class="li-r">${cs.filter(c=>c.st==='used').length}</div></div>
+<div class="li"><div>累计消费</div><div class="li-r">$${sp.reduce((s,x)=>s+x.amt,0).toFixed(0)}</div></div>
+<div class="li"><div>分红天数</div><div class="li-r">${bn.filter(b=>b.settled).length}</div></div>
+<div class="li"><div>储值活动次数</div><div class="li-r">${sv.length}</div></div>
+<div class="li"><div>推荐注册数</div><div class="li-r">${Object.values(ms).filter(m=>m.refBy).length}</div></div>`)}
+
+// HELPERS
+function addCpn(mid,pct,src,days){let cs=D.g('c');cs.push({id:'c'+Date.now()+'_'+Math.random().toString(36).slice(2,5),mid,pct,src,st:'active',exp:fd(days),rcode:gRC6(),issued:td()});D.s('c',cs)}
+function mPts(ph,amt,src){let ms=D.g('m');if(!ms[ph])return;ms[ph].pts=(ms[ph].pts||0)+amt;D.s('m',ms);if(U&&U.ph===ph)U.pts=ms[ph].pts;
+let pl=D.g('pl');pl.push({mid:ph,amt,src,date:td()});D.s('pl',pl)}
+function addNf(to,msg){let ns=D.g('nf');ns.push({to,msg,date:td()});D.s('nf',ns)}
+function gRC(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='KR';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
+function gRC6(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<6;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
+function td(){return new Date().toISOString().slice(0,10)}
+function fd(d){return new Date(Date.now()+d*864e5).toISOString().slice(0,10)}
+function curMonth(){return new Date().toISOString().slice(0,7)}
+function openMo(t,b){document.getElementById('mo-t').textContent=t;document.getElementById('mo-b').innerHTML=b;document.getElementById('mo').classList.add('on')}
+function closeMo(){document.getElementById('mo').classList.remove('on')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
+</script>
+</body>
+</html>
