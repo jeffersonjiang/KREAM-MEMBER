@@ -60,12 +60,27 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Noto Sans 
 <div style="font-size:10px;color:rgba(236,226,208,.4);margin-top:3px;letter-spacing:2px">KOREAN RESTAURANT · MEMBERSHIP</div>
 </div>
 <div style="padding:24px 18px">
-<div style="text-align:center;margin-bottom:20px"><div style="font-size:16px;font-weight:700">加入 KREAM 会员</div><div style="font-size:10px;color:var(--dim);margin-top:3px">输入手机号登录 · 新用户自动注册</div></div>
+<!-- Tab toggle -->
+<div style="display:flex;gap:0;margin-bottom:16px;background:var(--c2);border-radius:10px;padding:3px">
+<div id="lt-member" onclick="switchLoginTab('member')" style="flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;background:var(--gold);color:#000;transition:.2s">会员登录</div>
+<div id="lt-staff" onclick="switchLoginTab('staff')" style="flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:var(--dim);transition:.2s">员工/管理员</div>
+</div>
+<!-- Member login -->
+<div id="login-member">
+<div style="text-align:center;margin-bottom:16px"><div style="font-size:14px;font-weight:700">加入 KREAM 会员</div><div style="font-size:10px;color:var(--dim);margin-top:3px">输入手机号登录 · 新用户自动注册</div></div>
 <div class="ig"><label>手机号码</label><input type="tel" id="l-ph" placeholder="输入手机号"></div>
 <div class="ig"><label>姓名（首次注册）</label><input type="text" id="l-nm" placeholder="您的姓名"></div>
 <div class="ig"><label>验证码（必填：店员验证码 或 会员推荐码）</label><input type="text" id="l-ref" placeholder="输入店员验证码或会员推荐码" style="text-transform:uppercase"></div>
 <button class="btn btn-g" onclick="login()">进入会员中心</button>
-<button class="btn btn-o" style="margin-top:8px" onclick="adminLogin()">管理后台</button>
+</div>
+<!-- Staff login -->
+<div id="login-staff" class="hide">
+<div style="text-align:center;margin-bottom:16px"><div style="font-size:14px;font-weight:700">🔒 员工/管理员登录</div><div style="font-size:10px;color:var(--dim);margin-top:3px">使用管理员分配的账号密码登录</div></div>
+<div class="ig"><label>账号</label><input type="text" id="s-user" placeholder="输入账号" autocapitalize="off" autocomplete="username"></div>
+<div class="ig"><label>密码</label><input type="password" id="s-pass" placeholder="输入密码" autocomplete="current-password"></div>
+<button class="btn btn-g" onclick="staffLogin()">登录后台</button>
+<div style="text-align:center;margin-top:12px;font-size:9px;color:var(--dim)">默认管理员账号: admin</div>
+</div>
 </div></div>
 
 <!-- HOME -->
@@ -196,7 +211,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Noto Sans 
 
 <!-- ADMIN -->
 <div class="page" id="p-admin">
-<div class="hd"><div class="logo" style="font-size:15px">管理后台</div></div>
+<div class="hd"><div class="logo" style="font-size:15px">管理后台</div><div id="admin-info" style="font-size:10px;color:var(--gold)"></div></div>
 <div class="sec">
 <div class="cd" onclick="aMembers()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>👥 会员管理</b><span style="color:var(--gold)">→</span></div></div>
 <div class="cd" onclick="aRedeem()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>✅ 核销优惠券</b><span style="color:var(--gold)">→</span></div></div>
@@ -206,9 +221,10 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,'Noto Sans 
 <div class="cd" onclick="aIssCpn()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🎫 手动发券</b><span style="color:var(--gold)">→</span></div></div>
 <div class="cd" onclick="aAct()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>📢 管理活动(含图片)</b><span style="color:var(--gold)">→</span></div></div>
 <div class="cd" onclick="aProd()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🆕 管理新品(含图片)</b><span style="color:var(--gold)">→</span></div></div>
-<div class="cd" onclick="aStoreCode()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🔐 店员验证码管理</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" id="btn-staff" onclick="aStaff()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>👨‍💼 员工账号管理</b><span style="color:var(--gold)">→</span></div></div>
+<div class="cd" id="btn-storecode" onclick="aStoreCode()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>🔐 店员验证码管理</b><span style="color:var(--gold)">→</span></div></div>
 <div class="cd" onclick="aStat()" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>📊 数据统计</b><span style="color:var(--gold)">→</span></div></div>
-<button class="btn btn-o" onclick="go('login')" style="margin-top:10px;border-color:#555;color:#888">退出后台</button>
+<button class="btn btn-o" onclick="staffLogout()" style="margin-top:10px;border-color:#555;color:#888">退出后台</button>
 </div></div>
 
 <!-- MODAL -->
@@ -234,8 +250,9 @@ if(!D.g('acts'))D.s('acts',[{id:1,title:'VIP Day 每日分红',desc:'每日营�
 if(!D.g('storeCode'))D.s('storeCode','KREAM88');
 if(!D.g('prods'))D.s('prods',[{id:1,name:'🔥 榴莲芝士炸鸡',desc:'东南亚风味碰撞韩式炸鸡，榴莲芝士酱浓郁拉丝。',date:'即将上线',img:''},
 {id:2,name:'🆕 熔岩芝士鸡蛋羹',desc:'韩式鸡蛋羹升级版，流心芝士内馅。',date:'新品',img:''}]);
+if(!D.g('staff'))D.s('staff',[{id:'admin',name:'管理员',pw:'kream2026',role:'admin'}]);
 
-let U=null,selBonusDate='';
+let U=null,selBonusDate='',staffUser=null,_tmpImg='';
 window.addEventListener('load',()=>{const sv=D.g('lu');if(sv){document.getElementById('l-ph').value=sv.ph||'';document.getElementById('l-nm').value=sv.nm||'';}});
 
 function login(){
@@ -267,13 +284,17 @@ function login(){
   ms[ph]=nu;D.s('m',ms);U=nu;D.s('lu',{ph,nm});rHome();go('home');document.getElementById('tabbar').classList.remove('hide');
 }
 function mPts2(mem,amt){mem.pts=(mem.pts||0)+amt;let pl=D.g('pl');pl.push({mid:mem.ph,amt,src:'新会员注册礼',date:td()});D.s('pl',pl)}
-function adminLogin(){const pw=prompt('管理密码:');if(pw==='kream2026'){go('admin');document.getElementById('tabbar').classList.add('hide')}else if(pw!==null)toast('密码错误')}
+function switchLoginTab(tab){document.getElementById('login-member').classList.toggle('hide',tab!=='member');document.getElementById('login-staff').classList.toggle('hide',tab!=='staff');const m=document.getElementById('lt-member'),s=document.getElementById('lt-staff');if(tab==='member'){m.style.background='var(--gold)';m.style.color='#000';s.style.background='none';s.style.color='var(--dim)'}else{s.style.background='var(--gold)';s.style.color='#000';m.style.background='none';m.style.color='var(--dim)'}}
+function staffLogin(){const user=document.getElementById('s-user').value.trim().toLowerCase(),pass=document.getElementById('s-pass').value;if(!user||!pass){toast('请输入账号和密码');return}const staff=D.g('staff')||[];const found=staff.find(s=>s.id.toLowerCase()===user&&s.pw===pass);if(!found){toast('账号或密码错误');return}staffUser=found;go('admin');document.getElementById('tabbar').classList.add('hide');toast('欢迎, '+found.name+'!')}
+function staffLogout(){staffUser=null;document.getElementById('s-user').value='';document.getElementById('s-pass').value='';go('login');document.getElementById('tabbar').classList.add('hide')}
+function adminLogin(){switchLoginTab('staff');go('login')}
+function rAdmin(){const info=document.getElementById('admin-info');if(info&&staffUser)info.textContent=staffUser.name+(staffUser.role==='admin'?' · 管理员':' · 员工');const sb=document.getElementById('btn-staff'),cb=document.getElementById('btn-storecode');if(staffUser&&staffUser.role!=='admin'){if(sb)sb.classList.add('hide');if(cb)cb.classList.add('hide')}else{if(sb)sb.classList.remove('hide');if(cb)cb.classList.remove('hide')}}
 function logout(){U=null;go('login');document.getElementById('tabbar').classList.add('hide')}
 
 function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.getElementById('p-'+id).classList.add('on');
 document.querySelectorAll('.tab a').forEach(a=>a.classList.remove('on'));const t=document.getElementById('t-'+id);if(t)t.classList.add('on');
 if(id==='home')rHome();if(id==='cpn')rCpn('active');if(id==='bonus')rBonus();if(id==='ref')rRef();if(id==='pts')rPts();if(id==='sv')rSV();
-if(id==='act')rActs(document.getElementById('act-list'),99);if(id==='prod')rProds(document.getElementById('prod-list'),99);window.scrollTo(0,0)}
+if(id==='act')rActs(document.getElementById('act-list'),99);if(id==='prod')rProds(document.getElementById('prod-list'),99);if(id==='admin')rAdmin();window.scrollTo(0,0)}
 
 // HOME
 function rHome(){if(!U)return;const ms=D.g('m');U=ms[U.ph]||U;
@@ -446,27 +467,27 @@ openMo('🎫 发放优惠券',`<div class="ig"><label>会员</label><select id="
 function doIssCpn(){const t=document.getElementById('ai-m').value,p=parseInt(document.getElementById('ai-p').value),s=document.getElementById('ai-s').value||'手动',d=parseInt(document.getElementById('ai-d').value)||30;
 if(t==='ALL'){Object.keys(D.g('m')).forEach(ph=>addCpn(ph,p,s,d));toast('全员已发放')}else{addCpn(t,p,s,d);toast('已发放')}closeMo()}
 
-function aAct(){openMo('📢 管理活动',`<div class="ig"><label>标题</label><input type="text" id="aa-t"></div>
+function aAct(){_tmpImg='';openMo('📢 管理活动',`<div class="ig"><label>标题</label><input type="text" id="aa-t"></div>
 <div class="ig"><label>描述</label><textarea id="aa-d" rows="2"></textarea></div>
-<div class="ig"><label>图片URL（可选）</label><input type="text" id="aa-img" placeholder="https://..."></div>
+<div class="ig"><label>📷 活动图片（可选·点击从相册选择）</label><input type="file" accept="image/*" id="aa-img" onchange="handleImg(this,'aa-prev')" style="padding:8px"><div id="aa-prev"></div></div>
 <div class="ig"><label>类型</label><select id="aa-tp"><option value="vip">会员专属</option><option value="all">全部</option></select></div>
 <div class="ig"><label>日期</label><input type="text" id="aa-dt" placeholder="每周三"></div>
 <button class="btn btn-g" onclick="doAddAct()">添加</button><div class="st" style="margin-top:12px">现有活动</div><div id="aa-ls"></div>`);
 let h='';D.g('acts').forEach((a,i)=>{h+=`<div class="li"><div>${a.title}</div><div class="li-r" style="cursor:pointer;color:var(--red)" onclick="delAct(${i})">删除</div></div>`});
 document.getElementById('aa-ls').innerHTML=h||'<div class="empty">无</div>'}
-function doAddAct(){const t=document.getElementById('aa-t').value,d=document.getElementById('aa-d').value,img=document.getElementById('aa-img').value,
+function doAddAct(){const t=document.getElementById('aa-t').value,d=document.getElementById('aa-d').value,img=_tmpImg,
 tp=document.getElementById('aa-tp').value,dt=document.getElementById('aa-dt').value;if(!t){toast('填标题');return}
 let a=D.g('acts');a.push({id:Date.now(),title:t,desc:d,type:tp,date:dt,img});D.s('acts',a);toast('已添加');closeMo()}
 function delAct(i){let a=D.g('acts');a.splice(i,1);D.s('acts',a);aAct()}
 
-function aProd(){openMo('🆕 管理新品',`<div class="ig"><label>名称</label><input type="text" id="ap-n"></div>
+function aProd(){_tmpImg='';openMo('🆕 管理新品',`<div class="ig"><label>名称</label><input type="text" id="ap-n"></div>
 <div class="ig"><label>描述</label><textarea id="ap-d" rows="2"></textarea></div>
-<div class="ig"><label>图片URL（可选）</label><input type="text" id="ap-img" placeholder="https://..."></div>
+<div class="ig"><label>📷 新品图片（可选·点击从相册选择）</label><input type="file" accept="image/*" id="ap-img" onchange="handleImg(this,'ap-prev')" style="padding:8px"><div id="ap-prev"></div></div>
 <div class="ig"><label>状态</label><input type="text" id="ap-dt" value="新品"></div>
 <button class="btn btn-g" onclick="doAddProd()">添加</button><div class="st" style="margin-top:12px">现有新品</div><div id="ap-ls"></div>`);
 let h='';D.g('prods').forEach((p,i)=>{h+=`<div class="li"><div>${p.name}</div><div class="li-r" style="cursor:pointer;color:var(--red)" onclick="delProd(${i})">删除</div></div>`});
 document.getElementById('ap-ls').innerHTML=h||'<div class="empty">无</div>'}
-function doAddProd(){const n=document.getElementById('ap-n').value,d=document.getElementById('ap-d').value,img=document.getElementById('ap-img').value,dt=document.getElementById('ap-dt').value||'新品';
+function doAddProd(){const n=document.getElementById('ap-n').value,d=document.getElementById('ap-d').value,img=_tmpImg,dt=document.getElementById('ap-dt').value||'新品';
 if(!n){toast('填名称');return}let p=D.g('prods');p.push({id:Date.now(),name:n,desc:d,date:dt,img});D.s('prods',p);toast('已添加');closeMo()}
 function delProd(i){let p=D.g('prods');p.splice(i,1);D.s('prods',p);aProd()}
 
@@ -483,6 +504,24 @@ openMo('📊 统计',`<div class="li"><div>总会员</div><div class="li-r">${Ob
 <div class="li"><div>分红天数</div><div class="li-r">${bn.filter(b=>b.settled).length}</div></div>
 <div class="li"><div>储值活动次数</div><div class="li-r">${sv.length}</div></div>
 <div class="li"><div>推荐注册数</div><div class="li-r">${Object.values(ms).filter(m=>m.refBy).length}</div></div>`)}
+
+function aStaff(){if(staffUser&&staffUser.role!=='admin'){toast('仅管理员可操作');return}
+const staff=D.g('staff')||[];let h=`<div class="st">添加员工账号</div>
+<div class="ig"><label>账号（登录用，小写字母/数字）</label><input type="text" id="ns-id" placeholder="如: staff01" autocapitalize="off"></div>
+<div class="ig"><label>姓名</label><input type="text" id="ns-nm" placeholder="员工姓名"></div>
+<div class="ig"><label>密码</label><input type="text" id="ns-pw" placeholder="设置密码（至少4位）"></div>
+<div class="ig"><label>角色</label><select id="ns-role"><option value="employee">员工</option><option value="admin">管理员</option></select></div>
+<button class="btn btn-g" onclick="doAddStaff()">➕ 添加账号</button>
+<div class="st" style="margin-top:14px">现有账号 (${staff.length})</div>`;
+staff.forEach((s,i)=>{h+=`<div class="li"><div><b>${s.name}</b><br><span style="font-size:9px;color:var(--dim)">账号: ${s.id} · ${s.role==='admin'?'🔑管理员':'👤员工'}</span></div><div style="display:flex;gap:8px">${s.id!=='admin'?`<span style="cursor:pointer;color:var(--red);font-size:11px" onclick="delStaff(${i})">删除</span>`:'<span style="font-size:9px;color:var(--dim)">默认</span>'}<span style="cursor:pointer;color:var(--blue);font-size:11px" onclick="resetPw(${i})">改密</span></div></div>`});
+openMo('👨‍💼 员工账号管理',h)}
+function doAddStaff(){const id=document.getElementById('ns-id').value.trim().toLowerCase(),nm=document.getElementById('ns-nm').value.trim(),pw=document.getElementById('ns-pw').value,role=document.getElementById('ns-role').value;
+if(!id||!nm||!pw){toast('请填写完整');return}if(id.length<3){toast('账号至少3个字符');return}if(pw.length<4){toast('密码至少4位');return}
+let staff=D.g('staff')||[];if(staff.find(s=>s.id===id)){toast('账号已存在');return}staff.push({id,name:nm,pw,role});D.s('staff',staff);toast('已添加: '+nm);aStaff()}
+function resetPw(i){const np=prompt('输入新密码(至少4位):');if(!np)return;if(np.length<4){toast('密码至少4位');return}let staff=D.g('staff');staff[i].pw=np;D.s('staff',staff);toast('密码已更新');aStaff()}
+function delStaff(i){let staff=D.g('staff');if(!confirm('确认删除 '+staff[i].name+' 的账号？'))return;staff.splice(i,1);D.s('staff',staff);toast('已删除');aStaff()}
+
+function handleImg(input,prevId){_tmpImg='';const el=document.getElementById(prevId);if(el)el.innerHTML='';if(!input.files||!input.files[0])return;const file=input.files[0];if(file.size>10*1024*1024){toast('图片太大，请选择10MB以内');return}const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>800){h=Math.round(h*800/w);w=800}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);_tmpImg=c.toDataURL('image/jpeg',0.7);if(el)el.innerHTML='<img src="'+_tmpImg+'" style="width:100%;border-radius:8px;margin-top:6px"><div style="text-align:center;font-size:9px;color:var(--grn);margin-top:3px">✅ 图片已选择</div>'};img.src=e.target.result};reader.readAsDataURL(file)}
 
 // HELPERS
 function addCpn(mid,pct,src,days){let cs=D.g('c');cs.push({id:'c'+Date.now()+'_'+Math.random().toString(36).slice(2,5),mid,pct,src,st:'active',exp:fd(days),rcode:gRC6(),issued:td()});D.s('c',cs)}
